@@ -1,5 +1,7 @@
 import psycopg2
 
+
+#Upon recieving a new transaction, this function will insert the record into the database
 def logTransaction(amt, typ):
     conn = psycopg2.connect("dbname=postgres user=postgres password=j041050916")
     cur = conn.cursor()
@@ -9,6 +11,9 @@ def logTransaction(amt, typ):
     cur.close()
     conn.close()
 
+#Recieves user input for transaction information (ie. Deposit/Withdrawal, Amt, and Date)
+#TODO 
+#Add date parameter to both py and DB table
 def getTransaction():
     conf = 1
 
@@ -21,7 +26,7 @@ def getTransaction():
     updateTot(amt, typ)
 
 
-
+#Confirmation of transaction before being commited
 def confirm(amt, typ):
     transactionType = ""
     if typ == 0:
@@ -38,13 +43,20 @@ def confirm(amt, typ):
     else:
         return 1
 
+
+#Kicks off the Budget Module, Controls flow between different aspects of the module
 def startBudget():
     print ("log Transaction (1)")
-    print ("Generate Report (2)")
+    print ("View Reports (2)")
     answer = input ("Selection:  ")
     if answer == 1:
         getTransaction()
+    if answer == 2:
+        reports()
 
+
+#Updates the total funds amt in a csv file
+#TODO: Add table to DB to store this value (Daily Totals?)
 def updateTot(amt, typ):
     f = open("tot.csv", "r+")
     a = float(f.readline())
@@ -58,6 +70,24 @@ def updateTot(amt, typ):
     f.write(str(temp))
     f.close()
 
+#Selection module for different report types for the budget
+def reports():
+    print("Select Report Type: ")
+    print("Transaction Log (1) ")
+    answer = input ("Selection: ")
+
+    if answer == 1:
+        transLog():
+
+
+def transLog():
+    print("Select Length of Report: ")
+    print("Day   (1)")
+    print("Month (2)")
+    print("All   (3)")
+    length = input ("Selection: ")
+
+    
 
 
 
