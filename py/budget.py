@@ -1,11 +1,13 @@
 import psycopg2
+import datetime
 
 
 #Upon recieving a new transaction, this function will insert the record into the database
-def logTransaction(amt, typ):
+def logTransaction(amt, typ, day, month, year):
     conn = psycopg2.connect("dbname=postgres user=postgres password=j041050916")
     cur = conn.cursor()
-    query = "INSERT INTO tLog (amt, type) VALUES ('%s', %r);" % (amt, typ)
+    print(month,day,year)
+    query = "INSERT INTO tLog (amt, type, dt) VALUES (%s, %s, '%s');" % (amt, typ, datetime.date(year,month,day))
     cur.execute(query)
     conn.commit()
     cur.close()
@@ -18,27 +20,37 @@ def getTransaction():
     conf = 1
 
     while conf:
-        amt = input ("Transaction amt:  ")
-        typ = input("Transaction type dep(1) wit(2):  ")
-        conf = confirm(amt, typ)
-    logTransaction(amt, typ)
+        amt = (input ("Transaction amt:  "))
+        typ = (input("Transaction type dep(1) wit(2):  "))
+        dt = input("Was this transaction completed today? (y) (n): ")
+
+        if dt == "y":
+            x = datetime.datetime.now()
+            month = int(x.strftime("%m")) 
+            day = int(x.strftime("%d"))
+            year =  int(x.strftime("%Y"))
+        else:
+            day = int(input ("Day: "))
+            month = int(input ("Month: "))
+            year = int(input ("Year: "))
+        conf = confirm(amt, typ, day, month, year)
+    logTransaction(amt, typ, day, month, year)
 
     updateTot(amt, typ)
 
 
 #Confirmation of transaction before being commited
-def confirm(amt, typ):
+def confirm(amt, typ, day, month, year):
     transactionType = ""
-    if typ == 0:
+    if typ == "0":
         transactionType = "deposit"
     else:
         transactionType = "withdrawal"
-    
 
-    print ("Confirm: Adding a %s to the log of amount %d") % (transactionType, amt)
+    print ("Confirm: Adding a %s to the log of amount %s for date %s/%s/%s" % (transactionType, amt, month, day, year))
     answer = input("Y(1) or N(2):  ")
 
-    if answer == 1:
+    if answer == "1":
         return 0
     else:
         return 1
@@ -49,9 +61,9 @@ def startBudget():
     print ("log Transaction (1)")
     print ("View Reports (2)")
     answer = input ("Selection:  ")
-    if answer == 1:
+    if answer == "1":
         getTransaction()
-    if answer == 2:
+    if answer == "2":
         reports()
 
 
@@ -77,8 +89,19 @@ def reports():
     answer = input ("Selection: ")
 
     if answer == 1:
-        transLog():
+        transLog()
 
+
+def queryLog(length):
+    conn = psycopg2.connect("dbname=postgres user=postgres password=j041050916")
+    cur = conn.cursor()
+    query = "SELECT * FROM tlog;"
+    cur.execute(query)
+    for record in cur:
+        print (record)
+    conn.commit()
+    cur.close()
+    conn.close()
 
 def transLog():
     print("Select Length of Report: ")
@@ -86,6 +109,13 @@ def transLog():
     print("Month (2)")
     print("All   (3)")
     length = input ("Selection: ")
+
+    print("Generating Report...")
+
+    #response = queryLog(1)
+
+
+
 
     
 

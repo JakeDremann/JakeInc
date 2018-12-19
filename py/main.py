@@ -1,4 +1,5 @@
 from budget import startBudget
+from budget import queryLog
 
 def mainPage():
 
@@ -9,7 +10,7 @@ def mainPage():
 
     answer = input("Selection: ")
 
-    if answer == 1:
+    if answer == "1":
         startBudget()
 
 
@@ -29,4 +30,4 @@ def displayTitle():
     print(l6)
 
 if __name__ == "__main__":
-        mainPage()
+        queryLog(1)
